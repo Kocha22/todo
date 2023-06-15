@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0ce5353653ac4aa921859375d213f73",
+    "content-hash": "54a34533a85315493cb70e4364020bfd",
     "packages": [
         {
             "name": "brick/math",
@@ -973,6 +973,90 @@
                 }
             ],
             "time": "2021-10-07T12:57:01+00:00"
+        },
+        {
+            "name": "intervention/image",
+            "version": "2.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "04be355f8d6734c826045d02a1079ad658322dad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/04be355f8d6734c826045d02a1079ad658322dad",
+                "reference": "04be355f8d6734c826045d02a1079ad658322dad",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1 || ^2.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "^4.8 || ^5.7 || ^7.5.15"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Intervention\\Image\\ImageServiceProvider"
+                    ],
+                    "aliases": {
+                        "Image": "Intervention\\Image\\Facades\\Image"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@intervention.io",
+                    "homepage": "https://intervention.io/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "support": {
+                "issues": "https://github.com/Intervention/image/issues",
+                "source": "https://github.com/Intervention/image/tree/2.7.2"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/interventionio",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/Intervention",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-05-21T17:30:32+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3055,6 +3139,72 @@
                 }
             ],
             "time": "2023-04-15T23:01:58+00:00"
+        },
+        {
+            "name": "rtconner/laravel-tagging",
+            "version": "4.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rtconner/laravel-tagging.git",
+                "reference": "bcce5300c01e5706b01f3dd3d7c920b46eb63c06"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rtconner/laravel-tagging/zipball/bcce5300c01e5706b01f3dd3d7c920b46eb63c06",
+                "reference": "bcce5300c01e5706b01f3dd3d7c920b46eb63c06",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": ">=8.0",
+                "illuminate/support": ">=8.0",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "1.*",
+                "orchestra/testbench": "6.*",
+                "phpunit/phpunit": "9.*",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Conner\\Tagging\\Providers\\TaggingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Conner\\Tagging\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Conner",
+                    "email": "rtconner+composer@smarter.bz"
+                }
+            ],
+            "description": "Use PHP traits to extend Laravel Eloquent Models to allow Tags. Models can be marked as Taggable.",
+            "homepage": "https://smartersoftware.net/packages/laravel-tagging-taggable",
+            "keywords": [
+                "Taggable",
+                "eloquent",
+                "laravel",
+                "laravel5",
+                "tag",
+                "tagged",
+                "tagging",
+                "tags"
+            ],
+            "support": {
+                "issues": "https://github.com/rtconner/laravel-tagging/issues",
+                "source": "https://github.com/rtconner/laravel-tagging/tree/4.1.4"
+            },
+            "time": "2022-04-25T22:18:50+00:00"
         },
         {
             "name": "symfony/console",

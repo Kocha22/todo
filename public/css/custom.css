@@ -1,0 +1,104 @@
+.action_icons {
+    display: flex;
+    justify-content: center;
+}
+
+.eye-icon {
+    background: url(../img/eye.svg) no-repeat;
+    background-position: center center;
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    text-indent: 30px;
+    cursor: pointer;
+    border: none;
+}
+
+.eye-icon:hover, .eye-icon:focus {
+    background: url(../img/eye-green.svg) no-repeat;
+}
+
+.draw-icon {
+    background: url(../img/draw.svg) no-repeat;
+    background-position: center center;
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    text-indent: 30px;
+    cursor: pointer;
+    border: none;
+    margin-right:5px;
+    margin-left:5px;
+}
+
+.draw-icon:hover, .draw-icon:focus {
+    background: url(../img/draw-red.svg) no-repeat;
+}
+
+.delete-icon {
+    background: url(../img/garbage.svg) no-repeat;
+    background-position: center center;
+    background-size: contain;
+    width: 15px;
+    height: 15px;
+    display: block;
+    text-indent: 30px;
+    cursor: pointer;
+    border: none;
+}
+
+.delete-icon:hover, .delete-icon:focus {
+    background: url(../img/garbage-red.svg) no-repeat;
+}
+
+.preview {
+    width: 150px;
+    height: 150px;
+}
+
+.container_image {
+    position: relative;
+    width: 50%;
+  }
+  
+  .preview {
+    opacity: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: .5s ease;
+    backface-visibility: hidden;
+  }
+  
+  .middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  .container_image:hover .preview {
+    opacity: 0.3;
+  }
+  
+  .container_image:hover .middle {
+    opacity: 1;
+  }
+  
+  .preview_text {
+    background-color: #04AA6D;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .bootstrap-tagsinput .tag {
+    background-color: #0A95FF;
+    padding: 2px 5px;
+}

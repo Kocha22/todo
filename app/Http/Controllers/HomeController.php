@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Post;
+use Auth;
 
 class HomeController extends Controller
 {
@@ -23,6 +26,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('welcome');
+        $user_id=Auth::user()->id;
+        $user = User::where('id', $user_id)->first();  
+        
+        $data= Post::where('user_id', $user_id)->get();  
+        $tagsArray = [];
+
+        foreach ($data as $post) {
+            $tags = $post->tags;
+            foreach ($tags as $tag) {
+                $tagsArray[$tag->name] = $tag;
+            }
+        }
+
+        return view('home', ['user'=>$user, 'tags' => $tagsArray]);
     }
 }

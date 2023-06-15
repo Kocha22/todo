@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -41,6 +42,10 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
+    public function index() {
+        return view('register');
+    }
+
     /**
      * Get a validator for an incoming registration request.
      *
@@ -54,6 +59,30 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
+    }
+
+    public function postRegister(Request $request)
+    {
+        $rules = [ 
+            'name' => 'required|regex:/^[А-Яа-яЁё]+$/u',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required|min:6'
+        ];
+    
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['code'=>'401', 'msg'=> $validator->errors()->toArray()]);
+        }
+
+        $data = $request->all(['name', 'email', 'password']);
+        $data['password'] = bcrypt($data['password']);
+        $user=$this->user->create($data);
+        $token = Str::random(60);
+        $user['remember_token'] = $token;
+        $user->save();
+        Auth::attempt($request->all(['email', 'password']));
+        return response()->json(['code' => 200,'msg' => 'На вашу почту отправлено ссылка для активации.']);       
     }
 
     /**
