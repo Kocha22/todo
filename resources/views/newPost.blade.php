@@ -48,6 +48,7 @@
                                                         <label for="title" class="col-sm-3 col-form-label">Название поста</label>
                                                         <div class="col-sm-9">
                                                             <input type="text" class="form-control" id="title" type="text" name="title">
+                                                            <span class="text-danger error-text title_error"></span>
                                                         </div>
                                                     </div>
 
@@ -55,6 +56,7 @@
                                                         <label for="description" class="col-sm-3 col-form-label">Описание</label>
                                                         <div class="col-sm-9">
                                                             <textarea class="form-control" id="description" name="description"></textarea>
+                                                            <span class="text-danger error-text description_error"></span>
                                                         </div>
                                                     </div>
 
@@ -62,6 +64,7 @@
                                                         <label class="col-sm-3 col-form-label">Картинка</label>
                                                         <div class="col-sm-9">
                                                         <input type="file" class="form-control" name="image" id="selectImage">
+                                                        <span class="text-danger error-text image_error"></span>
                                                         </div>
                                                     </div>
 
@@ -69,6 +72,7 @@
                                                         <label for="description" class="col-sm-3 col-form-label">Теги</label>
                                                         <div class="col-sm-9">
                                                         <input type="text" class="form-control" id="tags" name="tags" data-role="tagsinput" value="{{ old('tags') }}">
+                                                        <span class="text-danger error-text tags_error"></span>
                                                         </div>
                                                     </div>
 
@@ -129,8 +133,9 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            $.post({
+            $.ajax({
                 url: url,
+                type: 'POST',
                 data: formData,
                 cache: false,
                 dataType: 'json',
@@ -147,8 +152,6 @@
                             $('span.' + prefix + '_error').text(val[0]);
                         });
                     } else if (response.code == 200) {
-                        let success = response.msg;
-                        $("#res").text(success);
                         $("#form_app24")[0].reset();
                         window.location = '/home';
                     }

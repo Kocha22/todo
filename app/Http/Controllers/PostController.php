@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Auth;
+use Validator;
+use Illuminate\Support\Facades\File;
 
 
 class PostController extends Controller
@@ -40,11 +43,18 @@ class PostController extends Controller
         return view('editPost', ['user' => $user, 'post'=>$post, 'tags' => $tags]);
     }
     public function store(Request $request) {
-        $request->validate([
+        $rules = [
             'title' => 'required',
             'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'tags' => 'required'
+        ];
+
+        $validator = Validator::make($request->all('title', 'description', 'image'), $rules);
+        if ($validator->fails()) {
+            return response()->json(['code'=>'401', 'msg'=> $validator->errors()->toArray()]);
+        }
+
         $image = $request->file('image');
         $fileName = time() . '.' . $request->image->extension();
         $image->move(public_path('img'), $fileName);
@@ -92,6 +102,76 @@ class PostController extends Controller
 
         return response()->json(['code' => 200, 'msg' => 'Спасибо. Ваша заявка принята в обработку.']);
     }
+    public function update(Request $request, $id) {
+        Post::where('id',$id)->update([
+            'title' => $request->title, 
+            'description' => $request->description,
+        ]);
+        $post = Post::findOrFail($id);
+
+        $image = $request->file('image');
+        $fileName = time() . '.' . $request->image->extension();
+        $image->move(public_path('img'), $fileName);
+
+        $imagePath = public_path('img/' . $fileName);
+        $croppedImagePath = public_path('img/cropped_' . $fileName);
+        $cropWidth = 150;
+        $cropHeight = 150;
+        $image2 = Image::make($imagePath);
+        $croppedImage = $image2->fit($cropWidth, $cropHeight);
+        $croppedImage->save($croppedImagePath);
+
+        $post->image = $fileName;
+        $post->save();
+
+        $inputTags = array_map('trim', explode(',', $request->input('tags')));
+        $tagsPost = $post->tags;
+        $tagsTotal = Tag::get();
+    
+        $existingTags = [];
+        $newTags = [];
+    
+        foreach ($inputTags as $inputTag) {
+            $tagExists = false;
+    
+            foreach ($tagsPost as $tagPost) {
+                if (strcasecmp($tagPost->name, $inputTag) === 0) {
+                    $existingTags[] = $tagPost->id;
+                    $tagExists = true;
+                    break;
+                }
+            }
+    
+            if (!$tagExists) {
+                foreach ($tagsTotal as $tagTotal) {
+                    if (strcasecmp($tagTotal->name, $inputTag) === 0) {
+                        $existingTags[] = $tagTotal->id;
+                        $tagExists = true;
+                        break;
+                    }
+                }
+    
+                if (!$tagExists) {
+                    $newTag = new Tag;
+                    $newTag->name = $inputTag;
+                    $newTag->save();
+                    $newTags[] = $newTag->id;
+                }
+            }
+        }
+    
+        // Detach tags that are no longer present
+        foreach ($tagsPost as $tagPost) {
+            if (!in_array($tagPost->id, $existingTags)) {
+                $post->tags()->detach($tagPost->id);
+            }
+        }
+    
+        // Sync existing and new tags
+        $post->tags()->sync(array_merge($existingTags, $newTags));
+
+        return response()->json(['code' => 200, 'msg' => 'Спасибо. Ваша заявка принята в обработку.']);
+    }
     public function showImage(Request $request, $id) {
         $post = Post::where('id', $id)->first();
         return view('imageById', ['post' => $post]);
@@ -126,7 +206,7 @@ class PostController extends Controller
                  <td class="row_description">
                     <div class="container_image">
                         <a href="/image/'.$row->id.'" target="_blank">
-                            <img id="preview" class="preview" src="' . asset('img/cropped_' . $row->image) . '" alt="your image" class="mt-3"/>
+                            <img id="preview" class="preview" src="' . asset('img/cropped_' . ($row->image ? $row->image : 'no-pictures.png')) . '" alt="your image" class="mt-3"/>
                             <div class="middle">
                                 <div class="preview_text">Просмотр</div>
                             </div>
@@ -164,14 +244,20 @@ class PostController extends Controller
 
         $user_id = Auth::user()->id;   
         $posts= Post::where('user_id', $user_id)->get(); 
-        $tag = Tag::with('posts')->where('id', $id)->first();
-        $tags = $tag->posts;
+
+        $perPage = 10;
+        $page = $request->input('page', 1); 
+
         if($request->ajax())
         {
         $output = '';
         $query = $request->get('id');
-        if($query == $id) {
-            $data = $tag->posts; 
+        if($query == 'all') {
+            $data = Post::where('user_id', $user_id)->paginate($perPage, ['*'], 'page', $page);
+        } elseif($query == $id) {
+            $tag = Tag::with('posts')->where('id', $id)->first();
+            $tags = $tag->posts;
+            $data = $tag->posts;           
         }
         $total_row = $data->count();
         if($total_row > 0)
@@ -213,9 +299,7 @@ class PostController extends Controller
         }
         $data = array(
         'table_data'  => $output,
-        'total_data'  => $total_row,
-        'tags' => $tags
-
+        'total_data'  => $total_row
         );
 
         echo json_encode($data);
@@ -290,5 +374,26 @@ class PostController extends Controller
         $posts->delete();
 
         return response()->json(['msg' => 'Удалено.']);
+    }
+    public function deleteImage($id)
+    {
+        // Get the post or image record from the database based on the ID
+        $post = Post::find($id);
+
+        if ($post) {
+            // Delete the image file from the public folder
+            $imagePath = public_path('img/' . $post->image);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+
+            // Delete the image name from the column in the table
+            $post->image = null;
+            $post->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }

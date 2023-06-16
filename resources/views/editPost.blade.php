@@ -38,7 +38,7 @@
                                     <!-- Default box -->
                                     <div class="card">
                                         <div class="card-body">
-                                            <form id="form_app24" class="" action="{{ route('storepost') }}"
+                                            <form id="updateForm" class="" action="{{ route('updatepost', ['id' => $post->id ]) }}"
                                                 method="post">
                                                 <input type="hidden" id="user_id" name="user_id" value="{{ $user->id }}" />
                                                 <input type="hidden" id="post_id" value="" />
@@ -62,16 +62,21 @@
                                                         <label class="col-sm-3 col-form-label">Картинка</label>
                                                         <div class="col-sm-9">
                                                         <input type="file" class="form-control" name="image" id="selectImage">
+                                                        <div class="img_container">
+                                                        @if ($post->image)
+                                                        <img id="preview" class="preview" src="{{ asset('img/' . $post->image) }}" alt="your image" class="mt-3"/>
+                                                        <button class="delete-image" data-image-id="{{ $post->id }}">Delete Image</button>
+                                                        @else
+                                                        <img id="preview" class="preview" src="{{ asset('img/no-pictures.png') }}" alt="your image" class="mt-3"/>
+                                                        @endif
+                                                        </div>                                                        
                                                         </div>
                                                     </div>
 
                                                     <div class="row mb-3">
                                                         <label for="description" class="col-sm-3 col-form-label">Теги</label>
                                                         <div class="col-sm-9">
-                                                        @foreach ($tags as $tag)
-                                                            <button class="button_1 btn" name="button" data-id="{{ $tag->id }}">{{ $tag->name }}</button>
-                                                        @endforeach
-                                                        <input type="text" class="form-control" id="tags" name="tags" data-role="tagsinput" value="{{ implode(', ', $post->tags->pluck('name')->toArray()) }}">
+                                                        <input type="text" class="form-control" id="tags" name="tags" data-role="tagsinput" value="{{ implode(', ', $post->tags()->pluck('name')->toArray() ?? [] )}}">
                                                         </div>
                                                     </div>
 
@@ -123,7 +128,28 @@
     let row_title;
     let row_description;
 
-    $("#form_app24").submit(function(e) {
+    $('.delete-image').on('click', function(e) {
+        e.preventDefault();
+        var imageContainer = $(this).closest('.img_container');
+        var imageId = $(this).data('image-id');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: '/deleteimage/' + imageId,
+            type: 'DELETE',
+            success: function(response) {
+                imageContainer.css('display', 'none');
+            },
+            error: function(xhr) {
+               console.log(error);
+            }
+        });
+    });
+
+    $("#updateForm").submit(function(e) {
         e.preventDefault();
         let url = $(this).attr('action');
             var formData = new FormData(this);
@@ -150,9 +176,6 @@
                             $('span.' + prefix + '_error').text(val[0]);
                         });
                     } else if (response.code == 200) {
-                        let success = response.msg;
-                        $("#res").text(success);
-                        $("#form_app24")[0].reset();
                         window.location = '/home';
                     }
                 }

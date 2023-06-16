@@ -25,15 +25,18 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <input type="hidden" id="user_id" name="user_id" value="{{ $user->id }}" />
-                                            <a href="{{ route('newpost') }}" class="btn btn-primary">Добавить новый пост</a>
-                                            <div id="tagsContainer">
-                                                    @foreach ($tags as $tag)
-                                                        <button class="button_1 btn" name="button" data-id="{{ $tag->id }}">{{ $tag->name }}</button>
-                                                    @endforeach
+                                            <div class="upper_nav">
+                                                <div id="tagsContainer">
+                                                        <button class="button_1 btn bootstrap-tagsinput active" name="button" data-id="all">All</button>
+                                                        @foreach ($tags as $tag)
+                                                            <button class="button_1 btn bootstrap-tagsinput" name="button" data-id="{{ $tag->id }}">{{ $tag->name }}</button>
+                                                        @endforeach
+                                                </div>
+                                                <a href="{{ route('newpost') }}" class="btn btn-primary">Добавить новый пост</a>
                                             </div>
                                             <div>
-                                            <form id="tagSearchForm">
-                                                <input type="text" name="searchTag" id="searchTagInput">
+                                            <form id="tagSearchForm" class="form-inline">
+                                                <input type="text" name="searchTag" id="searchTagInput" class="form-control" placeholder="Поиск">
                                             </form>
                                             </div>
                                             <div class="form-home26 card-body">
@@ -51,29 +54,11 @@
                                                 <span id="paginationLinks" class="pagination">
                                                 </span>
                                             </div>
-
-
-
-
-
-
-
                                         </div>
                                     </div>
-
-
-
-
-
-
-
-
-
                                 </div>
                             </div>
                         </div>
-
-
                     </section>
                 </div>
             </div>
@@ -165,6 +150,8 @@
 
     $(".button_1").click(function(e) {
         e.preventDefault();
+        $('.button_1').removeClass('active');
+        $(this).addClass('active'); 
         let id = $(this).attr('data-id');
         $.ajax({    
            url:"filterPosts/" + id,        
@@ -172,8 +159,7 @@
            data:{id:id},        
            dataType:'json',        
            success:function(data) {    
-              $("#tbody").html(data.table_data);    
-              console.log(data.tags);
+              $("#tbody").html(data.table_data);  
            }        
           })        
     });

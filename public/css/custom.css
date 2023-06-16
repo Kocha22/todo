@@ -102,3 +102,24 @@
     background-color: #0A95FF;
     padding: 2px 5px;
 }
+
+.upper_nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.bootstrap-tagsinput.active {
+  background-color: #0A95FF;
+  color: #fff;  
+}
+
+.button_1:hover {
+  background-color: #0A95FF;
+  color: #fff;  
+}
+
+.img_container {
+  width: 150px;
+}
+
